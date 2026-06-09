@@ -10,13 +10,16 @@ type TabType = 'course' | 'exam' | 'policy'
 
 const TrainingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('course')
+  const [courses, setCourses] = useState(mockTrainingCourses)
+  const [exams, setExams] = useState(mockExamItems)
+  const [policies, setPolicies] = useState(mockPolicyDocs)
 
-  const completedCourses = mockTrainingCourses.filter(c => c.status === 'completed').length
-  const totalCourses = mockTrainingCourses.length
+  const completedCourses = courses.filter(c => c.status === 'completed').length
+  const totalCourses = courses.length
   const overallProgress = totalCourses > 0
-    ? Math.round(mockTrainingCourses.reduce((acc, c) => acc + c.progress, 0) / totalCourses)
+    ? Math.round(courses.reduce((acc, c) => acc + c.progress, 0) / totalCourses)
     : 0
-  const inProgressCourses = mockTrainingCourses.filter(c => c.status === 'in_progress').length
+  const inProgressCourses = courses.filter(c => c.status === 'in_progress').length
 
   const handleCourseClick = (course: typeof mockTrainingCourses[0]) => {
     console.log('[Training] course click:', course.id)
@@ -24,54 +27,92 @@ const TrainingPage: React.FC = () => {
   }
 
   const handleEnroll = (course: typeof mockTrainingCourses[0]) => {
-    console.log('[Training] enroll course:', course.id)
     if (course.enrollStatus === 'not_enrolled') {
       Taro.showModal({
         title: '报名确认',
-        content: `确定要报名《${course.title}》吗？报名截止：${course.enrollDeadline}`,
+        content: `确定要报名《${course.title}》吗？报名截止：${course.enrollDeadline || '不限'}`,
         success: (res) => {
           if (res.confirm) {
+            setCourses(courses.map(c => c.id === course.id
+              ? { ...c, enrollStatus: 'approved', status: c.status === 'not_started' ? 'in_progress' : c.status, progress: c.progress === 0 ? 5 : c.progress }
+              : c
+            ))
             Taro.showToast({ title: '报名成功', icon: 'success' })
           }
         }
       })
     } else {
-      Taro.showToast({ title: '继续学习', icon: 'none' })
+      Taro.showLoading({ title: '加载课程...', mask: true })
+      setTimeout(() => {
+        Taro.hideLoading()
+        setCourses(courses.map(c => c.id === course.id
+          ? { ...c, progress: Math.min(100, c.progress + 15), status: c.progress + 15 >= 100 ? 'completed' : 'in_progress' }
+          : c
+        ))
+        Taro.showToast({ title: '学习进度已更新+15%', icon: 'success' })
+      }, 800)
     }
   }
 
   const handleExamClick = (exam: typeof mockExamItems[0]) => {
-    console.log('[Training] exam click:', exam.id)
     if (exam.status === 'not_taken' || exam.status === 'in_progress') {
       Taro.showModal({
         title: '开始考试',
         content: `${exam.title}\n时长：${exam.duration}分钟\n总分：${exam.totalScore}分\n及格：${exam.passScore}分\n剩余次数：${exam.maxAttempts - exam.attemptCount}`,
         success: (res) => {
           if (res.confirm) {
-            Taro.showToast({ title: '开始答题', icon: 'none' })
+            Taro.showLoading({ title: '正在答题...', mask: true })
+            setTimeout(() => {
+              Taro.hideLoading()
+              const score = 70 + Math.floor(Math.random() * 30)
+              const passed = score >= exam.passScore
+              setExams(exams.map(e => e.id === exam.id
+                ? {
+                    ...e,
+                    status: passed ? 'passed' : 'failed',
+                    attemptCount: e.attemptCount + 1,
+                    score
+                  }
+                : e
+              ))
+              Taro.showModal({
+                title: passed ? '🎉 考试通过' : '😔 未通过',
+                content: `您的得分：${score} 分\n及格分数：${exam.passScore} 分\n${passed ? '恭喜您顺利通过本次考试！' : `差 ${exam.passScore - score} 分，请再接再厉！`}`,
+                showCancel: false
+              })
+            }, 2000)
           }
         }
       })
     } else {
-      Taro.showToast({ title: `考试${exam.status === 'passed' ? '通过' : '未通过'}`, icon: 'none' })
+      Taro.showModal({
+        title: exam.status === 'passed' ? '考试通过' : '考试未通过',
+        content: `最终得分：${(exam as any).score || '未记录'} 分\n考试次数：${exam.attemptCount}/${exam.maxAttempts}\n\n如需查看答题详情，请联系培训管理员。`,
+        showCancel: false
+      })
     }
   }
 
   const handlePolicyConfirm = (policy: typeof mockPolicyDocs[0]) => {
-    console.log('[Training] policy confirm:', policy.id)
     if (!policy.isConfirmed) {
       Taro.showModal({
         title: '制度确认',
-        content: `请认真阅读《${policy.title}》后确认。`,
+        content: `请认真阅读《${policy.title}》后确认。\n\n版本：${policy.version}\n发布：${policy.publishDate}`,
         confirmText: '我已阅读并确认',
         success: (res) => {
           if (res.confirm) {
+            setPolicies(policies.map(p => p.id === policy.id ? { ...p, isConfirmed: true } : p))
             Taro.showToast({ title: '确认成功', icon: 'success' })
           }
         }
       })
     } else {
-      Taro.showToast({ title: '已确认', icon: 'none' })
+      Taro.showModal({
+        title: policy.title,
+        content: `分类：${policy.category}\n版本：${policy.version}\n发布：${policy.publishDate}\n\n您已于 ${new Date().toISOString().slice(0,10)} 完成确认。\n\n（此处可跳转制度详情页查看完整文档）`,
+        showCancel: false,
+        confirmText: '关闭'
+      })
     }
   }
 
@@ -132,7 +173,7 @@ const TrainingPage: React.FC = () => {
               actionText='全部课程'
             />
             <View className={styles.courseList}>
-              {mockTrainingCourses.map(course => (
+              {courses.map(course => (
                 <View
                   className={styles.courseCard}
                   key={course.id}
@@ -192,10 +233,10 @@ const TrainingPage: React.FC = () => {
           <View className={styles.section}>
             <SectionHeader
               title='考试任务'
-              subtitle={`共 ${mockExamItems.length} 场`}
+              subtitle={`共 ${exams.length} 场`}
             />
             <View className={styles.examList}>
-              {mockExamItems.map(exam => {
+              {exams.map(exam => {
                 const statusInfo = getExamStatusInfo(exam.status)
                 return (
                   <View className={styles.examCard} key={exam.id}>
@@ -250,10 +291,10 @@ const TrainingPage: React.FC = () => {
           <View className={styles.section}>
             <SectionHeader
               title='制度确认'
-              subtitle={`未确认 ${mockPolicyDocs.filter(p=>!p.isConfirmed).length} 项`}
+              subtitle={`未确认 ${policies.filter(p=>!p.isConfirmed).length} 项`}
             />
             <View className={styles.policyList}>
-              {mockPolicyDocs.map(policy => (
+              {policies.map(policy => (
                 <View className={styles.policyCard} key={policy.id}>
                   <View className={styles.policyHeader}>
                     <Text className={styles.policyTitle}>📖 {policy.title}</Text>

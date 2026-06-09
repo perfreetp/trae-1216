@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, ScrollView } from '@tarojs/components'
+import { View, Text, ScrollView, Input, Textarea } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 import styles from './index.module.scss'
 import SectionHeader from '@/components/SectionHeader'
@@ -7,12 +7,29 @@ import classnames from 'classnames'
 import { mockSchedule, mockLeaveRecords, mockOvertimeBalance, mockAttendanceRecords } from '@/data/mockAttendance'
 
 type TabType = 'schedule' | 'leave' | 'record'
+type LeaveTypeKey = 'annual' | 'sick' | 'personal' | 'marriage' | 'maternity' | 'bereavement'
+
+const LEAVE_OPTIONS: { key: LeaveTypeKey; name: string; icon: string; unit: 'annualLeave' | 'sickLeave' | 'compensatoryLeave' | null }[] = [
+  { key: 'annual', name: '年假', icon: '🏖️', unit: 'annualLeave' },
+  { key: 'sick', name: '病假', icon: '🏥', unit: 'sickLeave' },
+  { key: 'personal', name: '事假', icon: '📝', unit: 'compensatoryLeave' },
+  { key: 'marriage', name: '婚假', icon: '💒', unit: null },
+  { key: 'maternity', name: '产假', icon: '👶', unit: null },
+  { key: 'bereavement', name: '丧假', icon: '🕊️', unit: null }
+]
 
 const AttendancePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('schedule')
   const [currentTime, setCurrentTime] = useState(new Date())
   const [checkInTime, setCheckInTime] = useState<string | null>('08:55')
   const [checkOutTime, setCheckOutTime] = useState<string | null>(null)
+  const [leaveRecords, setLeaveRecords] = useState(mockLeaveRecords)
+  const [attendanceRecords, setAttendanceRecords] = useState(mockAttendanceRecords)
+  const [overtimeBalance, setOvertimeBalance] = useState(mockOvertimeBalance)
+
+  const [leaveModalVisible, setLeaveModalVisible] = useState(false)
+  const [leaveForm, setLeaveForm] = useState({ type: 'annual' as LeaveTypeKey, startDate: '', endDate: '', days: 1, reason: '' })
+  const [leaveStep, setLeaveStep] = useState<'type' | 'detail'>('type')
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
@@ -45,27 +62,78 @@ const AttendancePage: React.FC = () => {
   }
 
   const handleGoOutPunch = () => {
-    console.log('[Attendance] go out punch')
     Taro.showModal({
       title: '外出打卡',
       content: '确定要提交外出打卡吗？将记录您的当前位置。',
       success: (res) => {
         if (res.confirm) {
-          Taro.showToast({ title: '外出打卡已提交', icon: 'success' })
+          const now = new Date()
+          const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
+          const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
+          const newRecord = {
+            id: `A${Date.now()}`,
+            date: dateStr,
+            type: '外出' as const,
+            time: timeStr,
+            location: '外出打卡（已记录GPS位置）',
+            status: 'normal' as const
+          }
+          setAttendanceRecords([newRecord, ...attendanceRecords])
+          setActiveTab('record')
+          Taro.showToast({ title: `外出打卡成功 ${timeStr}`, icon: 'success' })
         }
       }
     })
   }
 
   const handleApplyLeave = () => {
-    console.log('[Attendance] apply leave')
-    const leaves = ['年假', '病假', '事假', '婚假', '产假', '丧假']
-    Taro.showActionSheet({
-      itemList: leaves,
-      success: (res) => {
-        Taro.showToast({ title: `申请${leaves[res.tapIndex]}`, icon: 'none' })
-      }
-    })
+    const today = new Date()
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`
+    setLeaveForm({ type: 'annual', startDate: dateStr, endDate: dateStr, days: 1, reason: '' })
+    setLeaveStep('type')
+    setLeaveModalVisible(true)
+  }
+
+  const calcLeaveDays = (start: string, end: string) => {
+    if (!start || !end) return 1
+    const s = new Date(start).getTime()
+    const e = new Date(end).getTime()
+    if (e < s) return 1
+    return Math.max(1, Math.round((e - s) / 86400000) + 1)
+  }
+
+  const handleLeaveTypeSelect = (key: LeaveTypeKey) => {
+    setLeaveForm({ ...leaveForm, type: key })
+    setLeaveStep('detail')
+  }
+
+  const handleSubmitLeave = () => {
+    const { type, startDate, endDate, reason } = leaveForm
+    if (!startDate || !endDate) { Taro.showToast({ title: '请选择日期', icon: 'none' }); return }
+    if (!reason.trim() || reason.length < 5) { Taro.showToast({ title: '请假原因至少5个字', icon: 'none' }); return }
+    const days = calcLeaveDays(startDate, endDate)
+    const option = LEAVE_OPTIONS.find(o => o.key === type)!
+    const today = new Date()
+    const applyDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`
+    const newLeave = {
+      id: `L${Date.now()}`,
+      type,
+      typeName: option.name,
+      startDate,
+      endDate,
+      days,
+      reason: reason.trim(),
+      status: 'pending' as const,
+      applyDate,
+      approver: '周敏（HR总监）'
+    }
+    setLeaveRecords([newLeave, ...leaveRecords])
+    if (option.unit) {
+      setOvertimeBalance({ ...overtimeBalance, [option.unit]: Math.max(0, overtimeBalance[option.unit] - days) })
+    }
+    setLeaveModalVisible(false)
+    setActiveTab('leave')
+    Taro.showToast({ title: `${option.name}申请已提交`, icon: 'success' })
   }
 
   const todayStr = `${currentTime.getFullYear()}-${String(currentTime.getMonth()+1).padStart(2,'0')}-${String(currentTime.getDate()).padStart(2,'0')}`
@@ -83,10 +151,10 @@ const AttendancePage: React.FC = () => {
   }
 
   const balanceItems = [
-    { label: '年假剩余', value: mockOvertimeBalance.annualLeave, unit: '天' },
-    { label: '调休剩余', value: mockOvertimeBalance.compensatoryLeave, unit: '天' },
-    { label: '病假剩余', value: mockOvertimeBalance.sickLeave, unit: '天' },
-    { label: '加班累计', value: mockOvertimeBalance.overtimeHours, unit: '小时' }
+    { label: '年假剩余', value: overtimeBalance.annualLeave, unit: '天' },
+    { label: '调休剩余', value: overtimeBalance.compensatoryLeave, unit: '天' },
+    { label: '病假剩余', value: overtimeBalance.sickLeave, unit: '天' },
+    { label: '加班累计', value: overtimeBalance.overtimeHours, unit: '小时' }
   ]
 
   return (
@@ -229,7 +297,7 @@ const AttendancePage: React.FC = () => {
 
           {activeTab === 'leave' && (
             <View className={styles.recordList}>
-              {mockLeaveRecords.map(record => (
+              {leaveRecords.map(record => (
                 <View className={styles.recordCard} key={record.id}>
                   <View className={styles.recordHeader}>
                     <Text className={styles.recordType}>
@@ -269,7 +337,7 @@ const AttendancePage: React.FC = () => {
 
           {activeTab === 'record' && (
             <View className={styles.recordList}>
-              {mockAttendanceRecords.map(record => (
+              {attendanceRecords.map(record => (
                 <View className={styles.recordCard} key={record.id}>
                   <View className={styles.recordHeader}>
                     <Text className={styles.recordType}>
@@ -302,6 +370,93 @@ const AttendancePage: React.FC = () => {
       </View>
 
       <View className={styles.fabButton} onClick={handleApplyLeave}>+</View>
+
+      {leaveModalVisible && (
+          <View className={styles.modalMask} onClick={() => setLeaveModalVisible(false)}>
+            <View className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+              <View className={styles.modalHeader}>
+                <Text className={styles.modalTitle}>
+                  {leaveStep === 'type' ? '选择请假类型' : '填写请假信息'}
+                </Text>
+                <Text className={styles.modalClose} onClick={() => setLeaveModalVisible(false)}>×</Text>
+              </View>
+              <View className={styles.modalBody}>
+                {leaveStep === 'type' ? (
+                  <View className={styles.leaveTypeGrid}>
+                    {LEAVE_OPTIONS.map(opt => (
+                      <View
+                        className={classnames(styles.leaveTypeItem, leaveForm.type === opt.key && styles.leaveTypeActive)}
+                        key={opt.key}
+                        onClick={() => handleLeaveTypeSelect(opt.key)}
+                      >
+                        <Text className={styles.leaveTypeIcon}>{opt.icon}</Text>
+                        <Text className={styles.leaveTypeName}>{opt.name}</Text>
+                        {opt.unit && (
+                          <Text className={styles.leaveTypeBalance}>
+                            剩 {overtimeBalance[opt.unit]} 天
+                          </Text>
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                ) : (
+                  <>
+                    <View className={styles.formItem}>
+                      <Text className={styles.formLabel}>🏖️ 请假类型</Text>
+                      <View className={styles.formValueRow}>
+                        <Text>{LEAVE_OPTIONS.find(o => o.key === leaveForm.type)?.name}</Text>
+                        <Text className={styles.formChangeLink} onClick={() => setLeaveStep('type')}>更改</Text>
+                      </View>
+                    </View>
+                    <View className={styles.formItem}>
+                      <Text className={styles.formLabel}>📅 开始日期</Text>
+                      <Input
+                        className={styles.formInput}
+                        type='text'
+                        placeholder='请输入 如：2024-06-15'
+                        placeholderStyle='color:#86909C'
+                        value={leaveForm.startDate}
+                        onInput={(e) => setLeaveForm({ ...leaveForm, startDate: e.detail.value, days: calcLeaveDays(e.detail.value, leaveForm.endDate) })}
+                      />
+                    </View>
+                    <View className={styles.formItem}>
+                      <Text className={styles.formLabel}>📅 结束日期</Text>
+                      <Input
+                        className={styles.formInput}
+                        type='text'
+                        placeholder='请输入 如：2024-06-16'
+                        placeholderStyle='color:#86909C'
+                        value={leaveForm.endDate}
+                        onInput={(e) => setLeaveForm({ ...leaveForm, endDate: e.detail.value, days: calcLeaveDays(leaveForm.startDate, e.detail.value) })}
+                      />
+                    </View>
+                    <View className={styles.formItem}>
+                      <Text className={styles.formLabel}>⏰ 请假天数</Text>
+                      <Text className={styles.formValueBig}>{calcLeaveDays(leaveForm.startDate, leaveForm.endDate)} 天</Text>
+                    </View>
+                    <View className={styles.formItem}>
+                      <Text className={styles.formLabel}>📝 请假原因</Text>
+                      <Textarea
+                        className={styles.formTextarea}
+                        placeholder='请输入请假原因（至少5个字）...'
+                        placeholderStyle='color:#86909C'
+                        value={leaveForm.reason}
+                        maxlength={200}
+                        onInput={(e) => setLeaveForm({ ...leaveForm, reason: e.detail.value })}
+                      />
+                    </View>
+                  </>
+                )}
+              </View>
+              <View className={styles.modalFooter}>
+                <View className={styles.modalCancel} onClick={() => setLeaveModalVisible(false)}>取消</View>
+                {leaveStep === 'detail' && (
+                  <View className={styles.modalConfirm} onClick={handleSubmitLeave}>提交申请</View>
+                )}
+              </View>
+            </View>
+          </View>
+      )}
     </ScrollView>
   )
 }

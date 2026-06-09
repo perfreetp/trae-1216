@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, Image, ScrollView } from '@tarojs/components'
+import { View, Text, Image, ScrollView, Input } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import styles from './index.module.scss'
 import SectionHeader from '@/components/SectionHeader'
@@ -11,6 +11,10 @@ type SectionType = 'basic' | 'payroll' | 'cert'
 const ProfilePage: React.FC = () => {
   const [activeSection, setActiveSection] = useState<SectionType>('basic')
   const [emergencyContact, setEmergencyContact] = useState(mockUserInfo.emergencyContact)
+  const [certificates, setCertificates] = useState(mockCertificates)
+  const [payrollRecords, setPayrollRecords] = useState(mockPayrollRecords)
+  const [editEmergencyVisible, setEditEmergencyVisible] = useState(false)
+  const [editForm, setEditForm] = useState({ name: emergencyContact.name, relation: emergencyContact.relation, phone: emergencyContact.phone })
 
   const calcTenure = (entryDate: string) => {
     const start = new Date(entryDate)
@@ -20,23 +24,37 @@ const ProfilePage: React.FC = () => {
     return `${years}年${months >= 0 ? months : 12 + months}个月`
   }
 
-  const handleEditEmergency = () => {
-    console.log('[Profile] edit emergency contact')
-    Taro.showModal({
-      title: '编辑紧急联系人',
-      editable: true,
-      placeholderText: `姓名：${emergencyContact.name}  关系：${emergencyContact.relation}  电话：139****6666`,
-      success: () => {
-        Taro.showToast({ title: '信息已保存', icon: 'success' })
-      }
-    })
+  const openEditEmergency = () => {
+    setEditForm({ name: emergencyContact.name, relation: emergencyContact.relation, phone: emergencyContact.phone })
+    setEditEmergencyVisible(true)
+  }
+
+  const handleSaveEmergency = () => {
+    if (!editForm.name.trim()) { Taro.showToast({ title: '请输入姓名', icon: 'none' }); return }
+    if (!editForm.relation.trim()) { Taro.showToast({ title: '请输入关系', icon: 'none' }); return }
+    if (!editForm.phone.trim()) { Taro.showToast({ title: '请输入电话', icon: 'none' }); return }
+    setEmergencyContact({ ...editForm })
+    setEditEmergencyVisible(false)
+    Taro.showToast({ title: '保存成功', icon: 'success' })
   }
 
   const handleUploadCert = () => {
-    console.log('[Profile] upload certificate')
     Taro.chooseImage({
       count: 1,
-      success: () => {
+      success: (res) => {
+        const tempPath = res.tempFilePaths[0]
+        const certTypes = ['学历证书', '职业资格', '培训证书', '身份证明', '其他证件']
+        const today = new Date().toISOString().slice(0, 10)
+        const newCert = {
+          id: `C${Date.now()}`,
+          type: certTypes[Math.floor(Math.random() * certTypes.length)],
+          name: `上传证件_${today}`,
+          uploadDate: today,
+          expireDate: '-',
+          status: 'valid' as const,
+          thumbnail: tempPath
+        }
+        setCertificates([newCert, ...certificates])
         Taro.showToast({ title: '上传成功', icon: 'success' })
       },
       fail: (err) => {
@@ -46,11 +64,16 @@ const ProfilePage: React.FC = () => {
   }
 
   const handleDownloadPayroll = (record: typeof mockPayrollRecords[0]) => {
-    console.log('[Profile] download payroll:', record.id)
     Taro.showModal({
-      title: record.month,
-      content: `基本工资：¥${record.basicSalary}\n绩效奖金：¥${record.performanceBonus}\n加班费：¥${record.overtimePay}\n津贴：¥${record.allowance}\n扣款：¥${record.deduction}\n个税：¥${record.tax}\n社保：¥${record.socialInsurance}\n\n实发工资：¥${record.netSalary}`,
-      showCancel: false
+      title: record.month + ' 工资条',
+      content: `基本工资：¥${record.basicSalary}\n绩效奖金：¥${record.performanceBonus}\n加班费：¥${record.overtimePay}\n津贴：¥${record.allowance}\n扣款：¥${record.deduction}\n个税：¥${record.tax}\n社保：¥${record.socialInsurance}\n\n实发工资：¥${record.netSalary.toLocaleString()}`,
+      confirmText: record.isDownloaded ? '关闭' : '下载并查看',
+      success: (res) => {
+        if (res.confirm && !record.isDownloaded) {
+          setPayrollRecords(payrollRecords.map(r => r.id === record.id ? { ...r, isDownloaded: true } : r))
+          Taro.showToast({ title: '已下载到本地', icon: 'success' })
+        }
+      }
     })
   }
 
@@ -179,7 +202,7 @@ const ProfilePage: React.FC = () => {
               <View className={styles.infoCard}>
                 <View className={styles.cardHeader}>
                   <Text className={styles.cardTitle}>👨‍👩‍👧 紧急联系人</Text>
-                  <View className={styles.editBtn} onClick={handleEditEmergency}>✏️ 编辑</View>
+                  <View className={styles.editBtn} onClick={openEditEmergency}>✏️ 编辑</View>
                 </View>
                 <View className={styles.emergencyWrap}>
                   <View className={styles.emergencyRow}>
@@ -202,7 +225,7 @@ const ProfilePage: React.FC = () => {
           {activeSection === 'payroll' && (
             <>
               <SectionHeader title='最近工资条' subtitle='可查看详情并下载' />
-              {mockPayrollRecords.map(record => (
+              {payrollRecords.map(record => (
                 <View className={styles.payrollItem} key={record.id} onClick={() => handleDownloadPayroll(record)}>
                   <View className={styles.payrollInfo}>
                     <Text className={styles.payrollMonth}>💰 {record.month}</Text>
@@ -227,12 +250,15 @@ const ProfilePage: React.FC = () => {
 
           {activeSection === 'cert' && (
             <>
-              <SectionHeader title='证件管理' subtitle={`共 ${mockCertificates.length} 份证件`} />
+              <SectionHeader title='证件管理' subtitle={`共 ${certificates.length} 份证件`} />
               <View className={styles.certList}>
-                {mockCertificates.map(cert => {
+                {certificates.map(cert => {
                   const statusInfo = getStatusInfo(cert.status)
                   return (
                     <View className={styles.certItem} key={cert.id}>
+                      {(cert as any).thumbnail && (
+                        <Image className={styles.certThumb} src={(cert as any).thumbnail} mode='aspectFill' />
+                      )}
                       <View className={styles.certInfo}>
                         <Text className={styles.certName}>{cert.name}</Text>
                         <View className={styles.certMeta}>
@@ -258,6 +284,54 @@ const ProfilePage: React.FC = () => {
           )}
         </View>
       </View>
+
+      {editEmergencyVisible && (
+          <View className={styles.modalMask} onClick={() => setEditEmergencyVisible(false)}>
+            <View className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+              <View className={styles.modalHeader}>
+                <Text className={styles.modalTitle}>编辑紧急联系人</Text>
+                <Text className={styles.modalClose} onClick={() => setEditEmergencyVisible(false)}>×</Text>
+              </View>
+              <View className={styles.modalBody}>
+                <View className={styles.formItem}>
+                  <Text className={styles.formLabel}>👤 姓名</Text>
+                  <Input
+                    className={styles.formInput}
+                    placeholder='请输入姓名'
+                    placeholderStyle='color:#86909C'
+                    value={editForm.name}
+                    onInput={(e) => setEditForm({ ...editForm, name: e.detail.value })}
+                  />
+                </View>
+                <View className={styles.formItem}>
+                  <Text className={styles.formLabel}>👥 关系</Text>
+                  <Input
+                    className={styles.formInput}
+                    placeholder='如：配偶、父亲、母亲、子女'
+                    placeholderStyle='color:#86909C'
+                    value={editForm.relation}
+                    onInput={(e) => setEditForm({ ...editForm, relation: e.detail.value })}
+                  />
+                </View>
+                <View className={styles.formItem}>
+                  <Text className={styles.formLabel}>📱 联系电话</Text>
+                  <Input
+                    className={styles.formInput}
+                    type='number'
+                    placeholder='请输入联系电话'
+                    placeholderStyle='color:#86909C'
+                    value={editForm.phone}
+                    onInput={(e) => setEditForm({ ...editForm, phone: e.detail.value })}
+                  />
+                </View>
+              </View>
+              <View className={styles.modalFooter}>
+                <View className={styles.modalCancel} onClick={() => setEditEmergencyVisible(false)}>取消</View>
+                <View className={styles.modalConfirm} onClick={handleSaveEmergency}>保存</View>
+              </View>
+            </View>
+          </View>
+      )}
     </ScrollView>
   )
 }
