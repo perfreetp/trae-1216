@@ -1,0 +1,55 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.statList {
+  display: flex;
+  justify-content: space-between;
+}
+
+.statItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rpx;
+    height: 64rpx;
+    background: $color-divider;
+  }
+}
+
+.valueWrap {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.value {
+  font-size: 44rpx;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+}
+
+.unit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}

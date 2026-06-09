@@ -1,0 +1,418 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  padding: $spacing-lg $page-padding $spacing-xl;
+}
+
+.progressHeader {
+  background: $gradient-primary;
+  border-radius: $radius-xl;
+  padding: $spacing-xl $spacing-lg;
+  color: $color-text-white;
+  margin-bottom: $spacing-xl;
+  box-shadow: 0 8rpx 32rpx rgba(22, 93, 255, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.progressRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+}
+
+.progressInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.progressTitle {
+  font-size: $font-size-md;
+  opacity: 0.9;
+}
+
+.progressValue {
+  font-size: 56rpx;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+}
+
+.progressStats {
+  display: flex;
+  gap: $spacing-xl;
+}
+
+.statCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4rpx;
+}
+
+.statNum {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  opacity: 0.8;
+}
+
+.progressBarWrap {
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: $spacing-sm;
+}
+
+.progressBar {
+  height: 100%;
+  background: $gradient-success;
+  border-radius: $radius-round;
+  transition: width $transition-slow;
+}
+
+.progressHint {
+  font-size: $font-size-xs;
+  opacity: 0.8;
+}
+
+.tabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xs;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.tab {
+  flex: 1;
+  height: $button-height-sm;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+}
+
+.tabActive {
+  background: $gradient-primary;
+  color: $color-text-white;
+  box-shadow: 0 4rpx 12rpx rgba(22, 93, 255, 0.25);
+}
+
+.section {
+  margin-bottom: $spacing-xl;
+}
+
+.courseList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.courseCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  display: flex;
+  gap: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: translateY(-2rpx);
+    box-shadow: $shadow-card-hover;
+  }
+}
+
+.courseCover {
+  width: 220rpx;
+  height: 150rpx;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.coverImg {
+  width: 100%;
+  height: 100%;
+}
+
+.playIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-white;
+  font-size: 28rpx;
+}
+
+.courseContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.courseTop {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.courseTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.courseMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.courseCategory {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  background: rgba(22, 93, 255, 0.08);
+  color: $color-primary;
+  font-size: $font-size-xs;
+  flex-shrink: 0;
+}
+
+.courseBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.courseProgress {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.miniProgress {
+  flex: 1;
+  height: 8rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+  overflow: hidden;
+  max-width: 200rpx;
+}
+
+.miniProgressBar {
+  height: 100%;
+  background: $gradient-primary;
+  border-radius: $radius-round;
+}
+
+.progressText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  flex-shrink: 0;
+}
+
+.courseBtn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-button;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.btnPrimary {
+  background: $gradient-primary;
+  color: $color-text-white;
+}
+
+.btnOutline {
+  background: rgba(22, 93, 255, 0.08);
+  color: $color-primary;
+}
+
+.btnSuccess {
+  background: rgba(0, 180, 42, 0.1);
+  color: $color-success;
+}
+
+.statusBadge {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+}
+
+.badgeProgress { background: rgba(22, 93, 255, 0.1); color: $color-primary; }
+.badgeNotStart { background: rgba(134, 144, 156, 0.1); color: $color-text-tertiary; }
+.badgeDone { background: rgba(0, 180, 42, 0.1); color: $color-success; }
+
+.examList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.examCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.examHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  gap: $spacing-md;
+}
+
+.examTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  flex: 1;
+  @include text-ellipsis;
+}
+
+.examBody {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.examRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.examLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.examValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.examFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: $spacing-md;
+  gap: $spacing-sm;
+}
+
+.policyList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.policyCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.policyHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+  gap: $spacing-md;
+}
+
+.policyTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  flex: 1;
+  @include text-ellipsis;
+}
+
+.confirmTag {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  flex-shrink: 0;
+}
+
+.tagConfirmed {
+  background: rgba(0, 180, 42, 0.1);
+  color: $color-success;
+}
+
+.tagUnconfirmed {
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+}
+
+.policyMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.metaItem2 {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.policyFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.readHint {
+  font-size: $font-size-xs;
+  color: $color-warning;
+}

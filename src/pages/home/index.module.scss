@@ -1,0 +1,187 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  padding: $spacing-lg $page-padding $spacing-xl;
+  padding-top: 0;
+}
+
+.heroSection {
+  margin: 0 (-$page-padding);
+  padding: $spacing-xl $page-padding 56rpx;
+  background: $gradient-primary;
+  border-radius: 0 0 48rpx 48rpx;
+  color: $color-text-white;
+}
+
+.heroHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xl;
+}
+
+.greeting {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: $radius-round;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.greetingText {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.hello {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+}
+
+.userName {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.iconBtn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-round;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  position: relative;
+  transition: all $transition-fast;
+
+  &:active {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.badge {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 8rpx;
+  background: $color-error;
+  color: $color-text-white;
+  font-size: 20rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid $color-primary;
+}
+
+.heroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  opacity: 0.95;
+}
+
+.infoRow {
+  font-size: $font-size-sm;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.infoLabel {
+  opacity: 0.8;
+}
+
+.statSection {
+  margin-top: -24rpx;
+  position: relative;
+  z-index: 2;
+}
+
+.section {
+  margin-top: $spacing-xl;
+}
+
+.todoList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.noticeCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.noticeItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md 0;
+
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $color-divider;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.noticeIcon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-md;
+  background: rgba(22, 93, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  flex-shrink: 0;
+}
+
+.noticeContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.noticeTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.noticeTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.unreadDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  background: $color-error;
+  flex-shrink: 0;
+}

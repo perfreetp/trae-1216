@@ -1,0 +1,51 @@
+@use '@/styles/variables.scss' as *;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  padding: 0 $spacing-xs;
+}
+
+.titleWrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.bar {
+  width: 8rpx;
+  height: 32rpx;
+  border-radius: $radius-xs;
+  background: $gradient-primary;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-left: $spacing-sm;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $color-primary;
+  transition: opacity $transition-fast;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.arrow {
+  font-size: $font-size-md;
+  margin-left: 4rpx;
+}

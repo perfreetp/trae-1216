@@ -1,0 +1,432 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  padding: $spacing-lg $page-padding $spacing-xl;
+}
+
+.punchCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl $spacing-lg;
+  box-shadow: $shadow-card;
+  text-align: center;
+  margin-bottom: $spacing-xl;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4rpx;
+    background: $gradient-primary;
+  }
+}
+
+.punchTitle {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-md;
+}
+
+.currentTime {
+  font-size: 72rpx;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  letter-spacing: 4rpx;
+  line-height: 1.1;
+  margin-bottom: $spacing-xs;
+}
+
+.currentDate {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xl;
+}
+
+.punchRow {
+  display: flex;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.punchCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+}
+
+.punchLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.punchValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.punchValueLate {
+  color: $color-error;
+}
+
+.punchActions {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.punchBtn {
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+.btnPrimary {
+  background: $gradient-primary;
+  color: $color-text-white;
+  box-shadow: 0 8rpx 20rpx rgba(22, 93, 255, 0.3);
+}
+
+.btnSecondary {
+  background: rgba(255, 125, 0, 0.1);
+  color: $color-warning;
+  border: 2rpx solid rgba(255, 125, 0, 0.2);
+}
+
+.balanceSection {
+  margin-bottom: $spacing-xl;
+}
+
+.balanceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+}
+
+.balanceCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -32rpx;
+    top: -32rpx;
+    width: 96rpx;
+    height: 96rpx;
+    border-radius: $radius-round;
+    opacity: 0.08;
+  }
+}
+
+.balanceCard0::after { background: $color-primary; }
+.balanceCard1::after { background: $color-success; }
+.balanceCard2::after { background: $color-warning; }
+.balanceCard3::after { background: $color-cyan; }
+
+.balanceLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.balanceValue {
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+  margin-bottom: $spacing-xs;
+}
+
+.value0 { color: $color-primary; }
+.value1 { color: $color-success; }
+.value2 { color: $color-warning; }
+.value3 { color: $color-cyan; }
+
+.balanceUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.section {
+  margin-bottom: $spacing-xl;
+}
+
+.tabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xs;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.tab {
+  flex: 1;
+  height: $button-height-sm;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+}
+
+.tabActive {
+  background: $gradient-primary;
+  color: $color-text-white;
+  box-shadow: 0 4rpx 12rpx rgba(22, 93, 255, 0.25);
+}
+
+.recordList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.recordCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.recordHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.recordType {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.typeIcon {
+  font-size: 28rpx;
+}
+
+.recordStatus {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+}
+
+.statusPending {
+  background: rgba(255, 125, 0, 0.1);
+  color: $color-warning;
+}
+
+.statusApproved {
+  background: rgba(0, 180, 42, 0.1);
+  color: $color-success;
+}
+
+.statusRejected {
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+}
+
+.statusNormal {
+  background: rgba(22, 93, 255, 0.1);
+  color: $color-primary;
+}
+
+.statusLate {
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+}
+
+.statusEarly {
+  background: rgba(255, 125, 0, 0.1);
+  color: $color-warning;
+}
+
+.recordBody {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.recordRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recordLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.recordValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.scheduleWrap {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.scheduleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+}
+
+.monthLabel {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: $spacing-xs;
+}
+
+.weekdayHeader {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.weekdayItem {
+  text-align: center;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  padding: $spacing-xs 0;
+}
+
+.calendarDay {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  border-radius: $radius-md;
+  font-size: $font-size-xs;
+  transition: all $transition-fast;
+}
+
+.dayNormal {
+  background: rgba(22, 93, 255, 0.06);
+  color: $color-primary;
+}
+
+.dayMorning {
+  background: rgba(0, 180, 42, 0.1);
+  color: $color-success;
+}
+
+.dayAfternoon {
+  background: rgba(255, 125, 0, 0.1);
+  color: $color-warning;
+}
+
+.dayNight {
+  background: rgba(114, 46, 209, 0.1);
+  color: #722ED1;
+}
+
+.dayRest {
+  background: $color-bg-hover;
+  color: $color-text-tertiary;
+}
+
+.dayToday {
+  border: 3rpx solid $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.dayNumber {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.dayShift {
+  font-size: 18rpx;
+}
+
+.scheduleLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 1rpx solid $color-divider;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.legendDot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: $radius-xs;
+}
+
+.fabButton {
+  position: fixed;
+  right: $spacing-lg;
+  bottom: calc(120rpx + env(safe-area-inset-bottom));
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: $radius-round;
+  background: $gradient-primary;
+  box-shadow: 0 12rpx 32rpx rgba(22, 93, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-white;
+  font-size: 56rpx;
+  z-index: 99;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.92);
+  }
+}

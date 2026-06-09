@@ -1,0 +1,49 @@
+@use '@/styles/variables.scss' as *;
+
+.grid {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg $spacing-md;
+  box-shadow: $shadow-card;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-lg 0;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.8;
+    transform: scale(0.96);
+  }
+}
+
+.iconWrap {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: $radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+}
+
+.iconBg0 { background: rgba(22, 93, 255, 0.1); }
+.iconBg1 { background: rgba(255, 125, 0, 0.1); }
+.iconBg2 { background: rgba(0, 180, 42, 0.1); }
+.iconBg3 { background: rgba(114, 46, 209, 0.1); }
+.iconBg4 { background: rgba(245, 63, 63, 0.1); }
+.iconBg5 { background: rgba(20, 201, 201, 0.1); }
+.iconBg6 { background: rgba(235, 47, 150, 0.1); }
+.iconBg7 { background: rgba(22, 93, 255, 0.1); }
+
+.name {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}

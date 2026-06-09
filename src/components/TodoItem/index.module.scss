@@ -1,0 +1,97 @@
+@use '@/styles/variables.scss' as *;
+
+.item {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  gap: $spacing-md;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+
+  &:active {
+    opacity: 0.92;
+    transform: translateY(-2rpx);
+    box-shadow: $shadow-card-hover;
+  }
+}
+
+.leftBar {
+  width: 6rpx;
+  border-radius: $radius-xs;
+  position: absolute;
+  left: 0;
+  top: $spacing-lg;
+  bottom: $spacing-lg;
+}
+
+.barUrgent { background: $color-error; }
+.barPending { background: $color-warning; }
+.barNormal { background: $color-info; }
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+}
+
+.badge {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  flex-shrink: 0;
+}
+
+.badgeUrgent { background: rgba(245, 63, 63, 0.1); color: $color-error; }
+.badgePending { background: rgba(255, 125, 0, 0.1); color: $color-warning; }
+.badgeNormal { background: rgba(22, 93, 255, 0.1); color: $color-primary; }
+
+.desc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+  @include text-ellipsis-multi(2);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $spacing-xs;
+}
+
+.deadline {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.actionBtn {
+  padding: $spacing-sm $spacing-md;
+  background: $gradient-primary;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  border-radius: $radius-button;
+  transition: opacity $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
